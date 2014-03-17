@@ -82,12 +82,11 @@ public class Hangman extends JFrame
 		int hgap = 2;
 		int vgap = 2;
 	    alphaPanel = new JPanel(new GridLayout(rows, cols, hgap, vgap));
-	    String[] alpha = "abcdefghijklmnopqrstuvwxyz".split("");
-	        for(int i=1;i<=26;i++)
+	    char[] alpha = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+	        for(int i=0;i < alpha.length;i++)
 	        {
 	        	  btn=new JButton(String.valueOf(alpha[i]));
 	              alphaPanel.add(btn);
-	              btn.setText(alpha[i]);
 	              btn.addActionListener(new AlphaButtonListener());
 	        }   
 		
@@ -166,12 +165,51 @@ public class Hangman extends JFrame
 			if(guessThis.indexOf(choiceBtn.getText()) != -1)
 			{
 				String cue = choiceBtn.getText();
+				char c = cue.charAt(0); 
+				int z = getCueCount(cue, c);
 				
-				while (Array.IndexOf(letters, cue) != -1);
+				int Startpoint = 0;
 				
+				for (int i = 0; i < z; i++)
+				{
+					int x = guessThis.indexOf(cue, Startpoint);
+					hideThis = replace(hideThis, x-1, c);
+					System.out.println(cue);
+					System.out.println(c);
+					Startpoint = x;
+				}
+				
+				labelTop1.setText(hideThis);
 			}
-			
-
+		}
+		
+		public String replace(String str, int index, char replace)
+		{     
+		    if(str==null)
+		    {
+		        return str;
+		    }
+		    else if(index < 0 || index >= str.length())
+		    {
+		        return str;
+		    }
+		    char[] chars = str.toCharArray();
+		    chars[index] = replace;
+		    return String.valueOf(chars);       
+		}
+		
+		public int getCueCount(String string, char c)
+		{
+			int counter = 0;
+			for( int i = 0; i < string.length(); i++ ) 
+			{
+			    if(string.charAt(i) == c) 
+			    {
+			        counter++;
+			    } 
+			}
+			System.out.println(counter);
+			return counter;
 		}
 	}
 	
@@ -180,17 +218,4 @@ public class Hangman extends JFrame
 		Hangman myFrame = new Hangman();
 		myFrame.setVisible(true);
 	}
-
-	public int getCueCount(String guessThis2, String text) 
-	{
-		int counter = 0;
-		for( int i = 0; i < guessThis2.length(); i++ ) 
-		{
-		    if(guessThis2.charAt(i) == 'text') 
-		    {
-		        counter++;
-		    } 
-		}
-		return counter;
-	}	
 }
