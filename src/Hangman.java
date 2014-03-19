@@ -21,16 +21,14 @@ public class Hangman extends JFrame
 {
 	private static final int APP_WIDTH = 500;
 	private static final int APP_HEIGHT = 500;
-	private JLabel successLabel;
 	private JLabel choiceLabel;
-	private JLabel lbl;
 	private JLabel labelTop1;
 	private JLabel labelTop2;
 	private JLabel labelTop3;
 	
-	private String guessThis = "";
-	private String hideThis = "";
-	private String[] letters;
+	private char[] guessThis = null;
+	private char[] hideThis = null;
+	private char[] letters;
 	private JButton button;
 	private JButton btn;
 	private JPanel alphaPanel;
@@ -87,7 +85,7 @@ public class Hangman extends JFrame
 	        {
 	        	  btn=new JButton(String.valueOf(alpha[i]));
 	              alphaPanel.add(btn);
-	              btn.addActionListener(new AlphaButtonListener());
+	              btn.addActionListener(new MyButtonListener());
 	        }   
 		
 		add(topPanel);
@@ -101,10 +99,10 @@ public class Hangman extends JFrame
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
-			labelTop1.setText(getWord());
+			labelTop1.setText(getWord().toString());
 		}
 		
-		public String getWord()
+		public char[] getWord()
 		{
 			Random rand = new Random(System.currentTimeMillis());
 			String randWord = "";
@@ -120,15 +118,8 @@ public class Hangman extends JFrame
 			    }
 		    }
 			randWord = words.get(rand.nextInt(words.size()));
-			letters = randWord.split("");
-			for (int i = 0; i < letters.length; i++)
-			{
-				guessThis += letters[i] + " ";
-			}
-			for (int i = 0; i < letters.length - 1; i++)
-			{
-				hideThis += "_ ";
-			}
+			letters = randWord.toCharArray();
+			hideThis = getHidden(letters);
 			
 			System.out.println(randWord);
 			button.setVisible(false);
@@ -151,6 +142,19 @@ public class Hangman extends JFrame
 				return null;
 			}
 		}
+		
+		private char[] getHidden(char[]word)
+		{
+			char[] hideVersion = new char[word.length];
+			for (int i = 0; i < word.length; i++)
+			{
+				if (Character.isLetter(word[i]))
+				{
+					hideVersion[i] = '_';
+				}
+			}
+			return hideVersion;
+		}
 	}
 	
 	private class AlphaButtonListener implements ActionListener
@@ -162,55 +166,32 @@ public class Hangman extends JFrame
 			JButton choiceBtn = (JButton)e.getSource();
 			choiceLabel.setText(choiceBtn.getText());
 			
-			if(guessThis.indexOf(choiceBtn.getText()) != -1)
-			{
-				String cue = choiceBtn.getText();
-				char c = cue.charAt(0); 
-				int z = getCueCount(cue, c);
-				
-				int Startpoint = 0;
-				
-				for (int i = 0; i < z; i++)
-				{
-					int x = guessThis.indexOf(cue, Startpoint);
-					hideThis = replace(hideThis, x-1, c);
-					System.out.println(cue);
-					System.out.println(c);
-					Startpoint = x;
-				}
-				
-				labelTop1.setText(hideThis);
-			}
+			String cue = choiceBtn.getText();
+			char c = cue.charAt(0); 
+			char[] wordUpdate = replace(guessThis, c);
+			
+			labelTop1.setText(wordUpdate.toString());
 		}
 		
-		public String replace(String str, int index, char replace)
-		{     
-		    if(str==null)
-		    {
-		        return str;
-		    }
-		    else if(index < 0 || index >= str.length())
-		    {
-		        return str;
-		    }
-		    char[] chars = str.toCharArray();
-		    chars[index] = replace;
-		    return String.valueOf(chars);       
-		}
-		
-		public int getCueCount(String string, char c)
+		public char[] replace(char[] word, char replace)
 		{
-			int counter = 0;
-			for( int i = 0; i < string.length(); i++ ) 
+			//the letter comes in
+			//check to see if the letter matches the first letter in the word
+			//if so, replace the char at that index point in the hideThis
+			//if not, leave it alone (no else statement needed)
+			//return the new hideThis array, not the word array.
+			
+			for (int i = 0; i < word.length; i++)
 			{
-			    if(string.charAt(i) == c) 
-			    {
-			        counter++;
-			    } 
+				if (replace == word[i])
+				{
+					hideThis[i] = replace;
+				}
 			}
-			System.out.println(counter);
-			return counter;
+			
+			return hideThis;
 		}
+		
 	}
 	
 	public static void main (String[] args)
@@ -219,3 +200,4 @@ public class Hangman extends JFrame
 		myFrame.setVisible(true);
 	}
 }
+
